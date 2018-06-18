@@ -1,1 +1,8 @@
-vmhost
+VMM_account: "bench-ble-adm"
+VMM_password: "P@ssw0rd"
+ansible_user: CFTest
+ansible_password: AntemetA2018
+ansible_connection: winrm
+ansible_winrm_server_cert_validation: ignore
+ansible_winrm_transport: basic
+

@@ -1,0 +1,10 @@
+VMName: "matiteVM"
+VMMServer: "I-VMM-02.infra.bench"
+VMTemplateName: "VMTemplateTest"
+VMHostGroupName: "All Hosts"
+DiskSpaceGB: 16
+LogicalSwitchName: "InfraBenchAntemetaProvider_Switch"
+WorkGroup: "WORKGROUP" 
+Company: ""
+Description: "Little virtual machine created"
+NetworkName: "Mynetwork"

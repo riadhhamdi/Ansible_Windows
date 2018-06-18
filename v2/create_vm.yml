@@ -1,0 +1,18 @@
+- name: test winrm connexion
+  hosts: "{{VMMServer}}"
+  vars_files:
+    - args.yml
+    - params.yml
+  vars:
+    command_result: ''
+    secpasswd: ''
+    cred: ''
+  tasks:
+    - win_template:
+        src: createv2.j2
+        dest: C:\Users\{{ansible_user}}\create_vm.ps1
+    - win_shell: powershell.exe C:\Users\{{ansible_user}}\create_vm.ps1
+      register: command_result
+    - debug:
+        var: command_result
+

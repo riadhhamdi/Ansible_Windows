@@ -1,0 +1,42 @@
+$secpasswd = ConvertTo-SecureString "P@ssw0rd" -AsPlainText -Force
+$creds = New-Object System.Management.Automation.PSCredential ("bench-ble-adm", $secpasswd)
+
+$VMMServer = "{{VMMServer}}"
+$VMName = "{{VMName}}"
+
+
+#Connect to the VMM Server
+Get-SCVMMServer -ComputerName $VMMServer -Credential $creds
+
+$VMTemplate = $VMTemplate = Get-SCVMTemplate | where {$_.Name -eq "{{VMTemplateName}}"}
+
+# Supply the name of the template, the number of virtual machines to create, and 
+# the host group in which to deploy the virtual machines.
+$VMHostGroup = Get-VMHostGroup -Name "{{VMHostGroupName}}" 
+
+# Get and sort the host ratings for all the hosts in the host group.
+$HostRatings = @(Get-VMHostRating -DiskSpaceGB {{DiskSpaceGB}} -Template $VMTemplate -VMHostGroup $VMHostGroup -VMName $VMName | where { $_.Rating -gt 0 } | Sort-Object -property Rating -descending)
+
+ If($HostRatings.Count -eq "0") { throw "No hosts meet the requirements." }
+
+ # If there is at least one host that will support the virtual machine,
+ # create the virtual machine on the highest-rated host.
+ If ($HostRatings.Count -ne 0)
+ {
+
+  $VMHost = $HostRatings[0].VMHost
+  $VMPath = $HostRatings[0].VMHost.VMPaths[0]
+
+  #Generate a new job group (a random Guid). 
+  #Job Group comes in handy for checking job progress
+  $VMJobGroup = [System.Guid]::NewGuid()
+
+  Get-SCLogicalSwitch -Name "{{LogicalSwitchName}}"
+  
+  # Create the virtual machine.
+  # You can set VM owner, start and stop actions, and several other options here
+  New-VM -Template $VMTemplate -Name $VMName -Description "{{Description}}"`
+  -VMHost $VMHost -Path $VMPath -JobGroup $VMJobGroup -RunAsynchronously `
+  -ComputerName "*" -OrgName "{{Company}}"  -JoinWorkgroup "{{WorkGroup}}"  `
+  -AnswerFile $null -StartAction NeverAutoTurnOnVM -StopAction SaveVM 
+}
