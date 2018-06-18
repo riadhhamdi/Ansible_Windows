@@ -30,8 +30,12 @@ $HostRatings = @(Get-VMHostRating -DiskSpaceGB {{DiskSpaceGB}} -Template $VMTemp
   #Generate a new job group (a random Guid). 
   #Job Group comes in handy for checking job progress
   $VMJobGroup = [System.Guid]::NewGuid()
+  
 
-  Get-SCLogicalSwitch -Name "{{LogicalSwitchName}}"
+  
+  $VMNetwork = Get-SCVMNetwork -VMMServer "{{VMMServer}}" -Name "{{NetworkName}}"
+  
+  New-SCVirtualNetworkAdapter -VMMServer "{{VMMServer}}" -JobGroup $VMJobGroup -MACAddress "00:00:00:00:00:00" -MACAddressType Static -VLanEnabled $false -Synthetic -EnableVMNetworkOptimization $false -EnableMACAddressSpoofing $false -EnableGuestIPNetworkVirtualizationUpdates $false -IPv4AddressType Static -IPv6AddressType Dynamic -VMNetwork $VMNetwork -DevicePropertiesAdapterNameMode Disabled
   
   # Create the virtual machine.
   # You can set VM owner, start and stop actions, and several other options here

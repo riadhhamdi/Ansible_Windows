@@ -5,8 +5,6 @@
     - params.yml
   vars:
     command_result: ''
-    secpasswd: ''
-    cred: ''
   tasks:
     - win_template:
         src: createv2.j2
