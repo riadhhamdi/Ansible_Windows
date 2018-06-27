@@ -12,8 +12,8 @@
         hostname: I-VMM-02.infra.bench
         groups: scvmm
       ##Add all the variables to pass to SCVMM 
-      vm_name: "{{vm_name}}"
-      os: "{{os}}"
+        vm_name: "{{vm_name}}"
+        os: "{{os}}"
             
 - name: Running VM creation
   hosts: scvmm
