@@ -1,7 +1,7 @@
-VMM_account: "bench-ble-adm"
-VMM_password: "P@ssw0rd"
+VMM_account: "xxxxxxxxx"
+VMM_password: "xxxxxxxx"
 ansible_user: CFTest
-ansible_password: AntemetA2018
+ansible_password: Axxxxxxxxx
 ansible_connection: winrm
 ansible_winrm_server_cert_validation: ignore
 ansible_winrm_transport: basic
