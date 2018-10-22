@@ -1,0 +1,87 @@
+- name: create vm
+  hosts: "{{VMMServer}}"
+  vars_files:
+    - args.yml
+    - params.yml
+  vars:
+    command_result: ''
+  tasks:
+    - win_shell: |
+        $secpasswd = ConvertTo-SecureString "{{VMM_password}}" -AsPlainText -Force
+        $creds = New-Object System.Management.Automation.PSCredential ("{{VMM_account}}", $secpasswd)
+
+        $VMMServer = "{{VMMServer}}"
+        $VMName = "{{VMName}}"
+
+
+        #Connect to the VMM Server
+        Get-SCVMMServer -ComputerName $VMMServer -Credential $creds
+        
+        $VMTemplate = Get-SCVMTemplate | where {$_.Name -eq "{{VMTemplateName}}"}
+        
+        # Supply the name of the template, the number of virtual machines to create, and
+        # the host group in which to deploy the virtual machines.
+        $VMHostGroup = Get-SCVMHostGroup -Name "{{VMHostGroupName}}"
+        
+        # Get and sort the host ratings for all the hosts in the host group.
+        $HostRatings = @(Get-SCVMHostRating -DiskSpaceGB {{DiskSpaceGB}} -Template $VMTemplate -VMHostGroup $VMHostGroup -VMName $VMName | where { $_.Rating -gt 0 } | Sort-Object -property Rating -descending)
+        
+         If($HostRatings.Count -eq "0") { throw "No hosts meet the requirements." }
+        
+         # If there is at least one host that will support the virtual machine,
+         # create the virtual machine on the highest-rated host.
+         If ($HostRatings.Count -ne 0)
+         {
+        
+          $VMHost = $HostRatings[0].VMHost
+          $VMPath = $HostRatings[0].VMHost.VMPaths[0]
+        
+          #Generate a new job group (a random Guid).
+          #Job Group comes in handy for checking job progress
+          $VMJobGroup = [System.Guid]::NewGuid().ToString()
+        
+          $VMNetwork = Get-SCVMNetwork -VMMServer "{{VMMServer}}" -Name "{{NetworkName}}"
+        
+          New-SCVirtualNetworkAdapter -VMTemplate "{{VMTemplateName}}" -MACAddress "{{MacAddress}}" -MACAddressType Static -VLanEnabled $false -Synthetic -EnableVMNetworkOptimization $false -EnableMACAddressSpoofing $false -EnableGuestIPNetworkVirtualizationUpdates $false -IPv4AddressType Static -IPv6AddressType Dynamic -VMNetwork $VMNetwork -DevicePropertiesAdapterNameMode Disabled
+        
+        
+        
+          # Create the virtual machine.
+          # You can set VM owner, start and stop actions, and several other options here
+          New-SCVirtualMachine -VMTemplate $VMTemplate -Name $VMName -Description "{{Description}}"`
+          -VMHost $VMHost -Path $VMPath -JobGroup $VMJobGroup -RunAsynchronously `
+          -ComputerName "{{VMMServer}}" -Workgroup "{{WorkGroup}}"  `
+          -AnswerFile $null -StartAction NeverAutoTurnOnVM -StopAction SaveVM
+        }
+      register: command_result
+    - debug:
+        var: command_result 
+- name: create a record on service now table 
+  hosts: localhost 
+  vars_files: 
+    - argsAPI.yml 
+    - params.yml 
+  tasks: 
+  - name: create a new record on servicenow  
+    uri:
+      url: https://{{SnowInst}}/api/now/table/{{TableName}} #https://dev24647.service-now.com/api/now/table/cmdb_ci_server
+      headers: 
+        Content-Type: "application/json"
+      user: "{{api_username}}"
+      password: "{{api_password}}"
+      validate_certs: false
+      method: POST
+      body:
+        name: "{{VMName}}"
+        install_status: "{{VmInstallStatus}}"
+        company: "{{Company}}"
+        short_description: "{{Description}}"
+        os: "{{OsName}}"
+      body_format: json
+      status_code: 201
+    ignore_errors: true 
+    register: snow_record_update_output
+  - name: show the content of a variable 
+    debug: 
+      var: snow_record_update_output
+

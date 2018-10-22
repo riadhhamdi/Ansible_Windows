@@ -1,0 +1,7 @@
+$secpasswd = ConvertTo-SecureString "P@ssw0rd" -AsPlainText -Force
+$creds = New-Object System.Management.Automation.PSCredential ("bench-ble-adm", $secpasswd)
+$VMMServer = Get-SCVMMServer -compute localhost -Credential $creds
+$VMTemplate = Get-SCVMTemplate | where {$_.Name -eq "VMTemplateTest"}  
+$VMHost = "i-hyperv-02.infra.bench"
+New-SCVirtualMachine -VMTemplate $VMTemplate -Name "VM02" -VMHost $VMHost -RunAsynchronously  -path C:\ClusterStorage\ -BlockDynamicOptimization $false -StartVM -ReturnImmediately -StartAction "NeverAutoTurnOnVM" -StopAction "SaveVM"
+

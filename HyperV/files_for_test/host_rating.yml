@@ -1,0 +1,11 @@
+- name: this playbook is used to know the best host to deploy a VM
+  hosts: windows
+  vars:
+    command_result: ''
+  tasks:
+    - win_shell: $VMTemplate = Get-SCVMTemplate | where {$_.Name -eq "VMTemplateTest"}  
+    - win_shell: $VMHost = "i-hyperv-02.infra.bench"
+    - win_shell: Get-SCVMHostRating -DiskSpaceGB 5 -VMTemplate $VMTemplate -VMHost $VMHost -VMName "MaVM"
+      register: command_result
+    - debug:
+        var: command_result.stdout_lines

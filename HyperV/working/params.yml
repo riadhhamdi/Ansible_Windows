@@ -1,0 +1,17 @@
+VMName: "matiteVM"
+OsName: "Linux RedHat" ## it should exactly match with the String of th list of OS
+VmInstallStatus: "3"
+VMMServer: "I-VMM-02.infra.bench"
+MacAddress: "00:00:00:00:00:00"
+VMTemplateName: "VMTemplateTest_2"
+VMHostGroupName: "All Hosts"
+DiskSpaceGB: 16
+LogicalSwitchName: "InfraBenchAntemetaProvider_Switch" 
+WorkGroup: "WORKGROUP" 
+SnowInst: dev24647.service-now.com
+TableName: cmdb_ci_server
+Company: ""
+Description: "Little virtual machine created"
+NetworkName: "InfraBenchAntemetaNetworkCloudProvider"
+CpuCount: 2
+MemoryMB: 4096

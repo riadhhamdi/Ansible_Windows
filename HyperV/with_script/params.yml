@@ -1,0 +1,10 @@
+VMName: "matiteVM"
+VMMServer: "VMM FQDN"
+VMTemplateName: "VM"
+VMHostGroupName: "All Hosts"
+DiskSpaceGB: 16
+LogicalSwitchName: "logical switch name"
+WorkGroup: "WORKGROUP" 
+Company: ""
+Description: "Little virtual machine created"
+NetworkName: "Mynetwork"

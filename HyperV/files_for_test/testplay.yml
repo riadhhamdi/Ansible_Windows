@@ -1,0 +1,15 @@
+- name: test winrm connexion
+  hosts: I-VMM-02.infra.bench
+  vars:
+    ansible_user: bench-ble-adm@INFRA.BENCH
+    ansible_password: P@ssw0rd
+    ansible_connection: winrm
+    ansible_winrm_server_cert_validation: ignore
+    #ansible_winrm_scheme: http
+    #ansible_port: 5986
+    ansible_winrm_transport: kerberos
+    #ansible_winrm_kerberos_delegation: true
+    #ansible_winrm_kinit_mode: manual
+    #ansible_winrm_kinit_cmd: 'echo "P@ssw0rd" | kinit bench-ble-adm@INFRA.BENCH'
+  tasks:
+   - win_ping:

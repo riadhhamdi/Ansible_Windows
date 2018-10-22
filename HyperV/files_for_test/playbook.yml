@@ -1,0 +1,23 @@
+- name: launch a test 
+  hosts: all
+  vars_files:
+    - argsAPI.yml
+    - args.yml
+    - params.yml
+  tasks:
+    - debug:
+        var: varia
+    - name: add host to group 'scvmm' with variable vm_name and os
+      add_host:
+        hostname: I-VMM-02.infra.bench
+        groups: scvmm
+      ##Add all the variables to pass to SCVMM 
+        vm_name: "{{vm_name}}"
+        os: "{{os}}"
+            
+- name: Running VM creation
+  hosts: scvmm
+  tasks:
+  - debug:
+      var: os
+      
