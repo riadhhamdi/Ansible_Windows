@@ -1,5 +1,0 @@
-all:
-   children:
-      windows:
-         hosts:
-            I-VMM-02.infra.bench

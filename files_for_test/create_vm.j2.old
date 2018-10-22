@@ -1,6 +1,0 @@
-$VMMServer = Get-SCVMMServer -compute localhost -Credential $creds
-$VMTemplate = Get-SCVMTemplate | where {$_.Name -eq "VMTemplateTest"}  
-$sciadapter = New-SCVirtualScsiAdapter -VMTemplate $VMTemplate  
-$scdrive = New-SCVirtualDiskDrive -VMTemplate $VMTemplate -BUS 0 -LUN 1  
-$VMHost = "i-hyperv-02.infra.bench"
-New-SCVirtualMachine -VMTemplate $VMTemplate -Name "VM02" -VMHost $VMHost -RunAsynchronously  -path C:\ClusterStorage\
